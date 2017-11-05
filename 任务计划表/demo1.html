@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script src="./vue.js"></script>
+    <script src="./vue"></script>
     <style>
         * {
             padding: 0;
@@ -68,7 +68,7 @@
                 添加任务
             </h2>
             <input id='addtodo' type="text" v-model='todo' @keyup.enter='addNew'/>
-            <span v-text='noChecked'></span>
+            <span>{{noChecked}}个未完成的任务</span>
             <div class="btns">
                 <a href="#all">所有任务</a>
                 <a href="#finished">完成的任务</a>
@@ -144,7 +144,7 @@
                 noChecked: function(){
                     return this.list.filter(function(item){
                         return !item.isChecked;
-                    }).length+'个未完成的任务';
+                    }).length;
                 },
                 filteredList: function(){
                     return filter[this.visibility]?filter[this.visibility](this.list):this.list;
