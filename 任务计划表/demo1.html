@@ -68,7 +68,7 @@
                 添加任务
             </h2>
             <input id='addtodo' type="text" v-model='todo' @keyup.enter='addNew'/>
-            <span>{{noChecked}}个未完成的任务</span>
+            <span v-text='noChecked'></span>
             <div class="btns">
                 <a href="#all">所有任务</a>
                 <a href="#finished">完成的任务</a>
@@ -144,7 +144,7 @@
                 noChecked: function(){
                     return this.list.filter(function(item){
                         return !item.isChecked;
-                    }).length;
+                    }).length+'个未完成的任务';
                 },
                 filteredList: function(){
                     return filter[this.visibility]?filter[this.visibility](this.list):this.list;
