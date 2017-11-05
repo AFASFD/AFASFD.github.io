@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        header {
+            width: 100%;
+            height: 100px;
+            background-color: black;
+            text-align: center;
+        }
+        header h1 {
+            color: white;
+            line-height: 100px;
+        }
+        #app {
+            width: 50%;
+            margin: 0 auto;
+        }
+        #app h2 {
+            text-align: left;
+            margin: 10px;
+        }
+        li {
+            list-style:none;
+            font-size: 35px;
+            margin: 5px;
+        }
+        #addtodo {
+            width: 100%;
+            height: 40px;
+            font-size: 35px;
+        }
+        #checkbox {
+            zoom: 180%;
+        }
+        a {
+            float: right;
+        }
+        .completed {
+            text-decoration:line-through;
+        }
+        .btns{
+            float: right;
+        }
+        .btns a {
+            float: left;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>任务计划表</h1>
+    </header>
+    <article id='app'>
+        <section>
+            <h2>
+                添加任务
+            </h2>
+            <input id='addtodo' type="text" v-model='todo' @keyup.enter='addNew'/>
+            <span>{{noChecked}}个未完成的任务</span>
+            <div class="btns">
+                <a href="#all">所有任务</a>
+                <a href="#finished">完成的任务</a>
+                <a href="#unFinished">未完成的任务</a>
+            </div>
+        </section>
+        <section>
+            <ul>
+                <li v-for='item in filteredList' :class='{completed: item.isChecked}'>
+                    <div class="view">
+                        <input id='checkbox' type="checkbox" v-model='item.isChecked'/>
+                        <label>{{item.title}}</label>
+                        <a @click='deleteTodo(item)'>X</a>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </article>
+    <script>
+        var stroge={
+            save(key,value){
+                localStorage.setItem(key,JSON.stringify(value));
+            },
+            fetch(key){
+                return JSON.parse(localStorage.getItem(key))||[];
+            }
+        }
+        var list=stroge.fetch('todo-list');
+        var filter={
+            all(list){
+                return list;
+            },
+            finished(list){
+                return list.filter(function(item){
+                    return item.isChecked;
+                })
+            },
+            unFinished(list){
+                return list.filter(function(item){
+                    return !item.isChecked;
+                })
+            }
+        }
+        var vm=new Vue({
+            el: '#app',
+            data: {
+                list: list,
+                todo: '',
+                visibility:'all'
+            },
+            methods: {
+                addNew(){   //添加任务
+                    this.list.push({
+                        title: this.todo,
+                        isChecked: false
+                    });
+                    this.todo='';
+                },
+                deleteTodo(item){   //删除任务
+                    var index=this.list.indexOf(item);
+                    this.list.splice(index,1);
+                }
+            },
+            watch: {
+                list: {
+                    handler: function(){
+                        stroge.save('todo-list',this.list);
+                    },
+                    deep: true
+                },
+            },
+            computed: {
+                noChecked: function(){
+                    return this.list.filter(function(item){
+                        return !item.isChecked;
+                    }).length;
+                },
+                filteredList: function(){
+                    return filter[this.visibility]?filter[this.visibility](this.list):this.list;
+                }
+            }
+        });
+        var watchHash=function(){
+            var hash=window.location.hash.slice(1);
+            vm.visibility=hash;
+        }
+        watchHash();
+        window.addEventListener('hashchange',watchHash);
+    </script>
+</body>
+</html>
