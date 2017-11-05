@@ -90,10 +90,10 @@
     </article>
     <script>
         var stroge={
-            save(key,value){
+            save: function(key,value){
                 localStorage.setItem(key,JSON.stringify(value));
             },
-            fetch(key){
+            fetch: function(key){
                 return JSON.parse(localStorage.getItem(key))||[];
             }
         }
